@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>inference.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #bcbec4;}
+.s2 { color: #2aacb8;}
+.s3 { color: #cf8e6d;}
+.s4 { color: #bcbec4;}
+.s5 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+inference.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+</span><span class="s1">## 命令行推理 
+</span><span class="s0">#%% md 
+</span><span class="s1">### For Windows 
+</span><span class="s0">#%% 
+</span><span class="s1">!chcp </span><span class="s2">65001</span>
+<span class="s0">#%% md 
+</span><span class="s1">### For Linux 
+</span><span class="s0">#%% 
+</span><span class="s3">import </span><span class="s1">locale</span>
+<span class="s1">locale</span><span class="s4">.</span><span class="s1">setlocale</span><span class="s4">(</span><span class="s1">locale</span><span class="s4">.</span><span class="s1">LC_ALL</span><span class="s4">, </span><span class="s5">'en_US.UTF-8'</span><span class="s4">)</span>
+<span class="s0">#%% md 
+</span><span class="s1">## API Client 
+ 
+需要在终端开启API Server 
+ 
+&gt; 音频用本地路径 
+ 
+&gt; 文本可以直接用路径，也可以用内容 
+</span><span class="s0">#%% 
+</span><span class="s1">!python </span><span class="s4">-</span><span class="s1">m tools</span><span class="s4">.</span><span class="s1">post_api \</span>
+    <span class="s4">--</span><span class="s1">text </span><span class="s5">&quot;Hello everyone, I am an open-source text-to-speech model developed by Fish Audio.&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">reference_audio </span><span class="s5">&quot;D:\PythonProject\原神语音中文\胡桃</span><span class="s3">\v</span><span class="s5">o_hutao_draw_appear.wav&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">reference_text </span><span class="s5">&quot;D:\PythonProject\原神语音中文\胡桃</span><span class="s3">\v</span><span class="s5">o_hutao_draw_appear.lab&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">streaming </span><span class="s3">True</span>
+<span class="s0">#%% md 
+</span><span class="s1">## For Test 
+</span><span class="s0">#%% md 
+</span><span class="s1">### 0. 下载模型 
+</span><span class="s0">#%% 
+</span><span class="s1">!set HF_ENDPOINT</span><span class="s4">=</span><span class="s1">https</span><span class="s4">://</span><span class="s1">hf</span><span class="s4">-</span><span class="s1">mirror</span><span class="s4">.</span><span class="s1">com</span>
+<span class="s0"># !export HF_ENDPOINT=https://hf-mirror.com</span>
+<span class="s1">!huggingface</span><span class="s4">-</span><span class="s1">cli download fishaudio</span><span class="s4">/</span><span class="s1">fish</span><span class="s4">-</span><span class="s1">speech</span><span class="s4">-</span><span class="s2">1.2 </span><span class="s4">--</span><span class="s1">local</span><span class="s4">-</span><span class="s1">dir checkpoints</span><span class="s4">/</span><span class="s1">fish</span><span class="s4">-</span><span class="s1">speech</span><span class="s4">-</span><span class="s2">1.2</span><span class="s4">/</span>
+<span class="s0">#%% md 
+</span><span class="s1">### 1. 从语音生成 prompt: 
+&gt;  如果你打算让模型随机选择音色, 你可以跳过这一步. 
+ 
+你应该能得到一个 `fake.npy` 文件. 
+</span><span class="s0">#%% 
+## 在此输入你的语音路径:</span>
+<span class="s1">src_audio </span><span class="s4">= </span><span class="s5">r&quot;D:\PythonProject\原神语音中文\胡桃\vo_hutao_draw_appear.wav&quot;</span>
+
+<span class="s1">!python tools</span><span class="s4">/</span><span class="s1">vqgan</span><span class="s4">/</span><span class="s1">inference</span><span class="s4">.</span><span class="s1">py \</span>
+    <span class="s4">-</span><span class="s1">i </span><span class="s4">{</span><span class="s1">src_audio</span><span class="s4">} </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">checkpoint</span><span class="s4">-</span><span class="s1">path </span><span class="s5">&quot;checkpoints/fish-speech-1.2/firefly-gan-vq-fsq-4x1024-42hz-generator.pth&quot;</span>
+
+<span class="s3">from </span><span class="s1">IPython</span><span class="s4">.</span><span class="s1">display </span><span class="s3">import </span><span class="s1">Audio</span><span class="s4">, </span><span class="s1">display</span>
+<span class="s1">audio </span><span class="s4">= </span><span class="s1">Audio</span><span class="s4">(</span><span class="s1">filename</span><span class="s4">=</span><span class="s5">&quot;fake.wav&quot;</span><span class="s4">)</span>
+<span class="s1">display</span><span class="s4">(</span><span class="s1">audio</span><span class="s4">)</span>
+<span class="s0">#%% md 
+</span><span class="s1">### 2. 从文本生成语义 token: 
+&gt; 该命令会在工作目录下创建 codes_N 文件, 其中 N 是从 0 开始的整数. 
+ 
+&gt; 您可以使用 --compile 来融合 cuda 内核以实现更快的推理 
+</span><span class="s0">#%% 
+</span><span class="s1">!python tools</span><span class="s4">/</span><span class="s1">llama</span><span class="s4">/</span><span class="s1">generate</span><span class="s4">.</span><span class="s1">py \</span>
+    <span class="s4">--</span><span class="s1">text </span><span class="s5">&quot;人间灯火倒映湖中，她的渴望让静水泛起涟漪。若代价只是孤独，那就让这份愿望肆意流淌。流入她所注视的世间，也流入她如湖水般澄澈的目光。&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">prompt</span><span class="s4">-</span><span class="s1">text </span><span class="s5">&quot;唷，找本堂主有何贵干呀？嗯？你不知道吗，往生堂第七十七代堂主就是胡桃我啦！嘶，不过瞧你的模样，容光焕发，身体健康，嗯…想必是为了工作以外的事来找我，对吧？&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">prompt</span><span class="s4">-</span><span class="s1">tokens </span><span class="s5">&quot;fake.npy&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">checkpoint</span><span class="s4">-</span><span class="s1">path </span><span class="s5">&quot;checkpoints/fish-speech-1.2&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">num</span><span class="s4">-</span><span class="s1">samples </span><span class="s2">2</span>
+    <span class="s0"># --compile</span>
+<span class="s0">#%% md 
+</span><span class="s1">### 3. 从语义 token 生成人声: 
+</span><span class="s0">#%% 
+</span><span class="s1">!python tools</span><span class="s4">/</span><span class="s1">vqgan</span><span class="s4">/</span><span class="s1">inference</span><span class="s4">.</span><span class="s1">py \</span>
+    <span class="s4">-</span><span class="s1">i </span><span class="s5">&quot;codes_0.npy&quot; </span><span class="s1">\</span>
+    <span class="s4">--</span><span class="s1">checkpoint</span><span class="s4">-</span><span class="s1">path </span><span class="s5">&quot;checkpoints/fish-speech-1.2/firefly-gan-vq-fsq-4x1024-42hz-generator.pth&quot;</span>
+
+<span class="s3">from </span><span class="s1">IPython</span><span class="s4">.</span><span class="s1">display </span><span class="s3">import </span><span class="s1">Audio</span><span class="s4">, </span><span class="s1">display</span>
+<span class="s1">audio </span><span class="s4">= </span><span class="s1">Audio</span><span class="s4">(</span><span class="s1">filename</span><span class="s4">=</span><span class="s5">&quot;fake.wav&quot;</span><span class="s4">)</span>
+<span class="s1">display</span><span class="s4">(</span><span class="s1">audio</span><span class="s4">)</span></pre>
+</body>
+</html>
